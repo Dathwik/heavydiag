@@ -1,0 +1,119 @@
+{
+  "_comment": "SAE J1939 PGN Registry — subset used by HeavyDiag",
+  "pgns": {
+    "61444": {
+      "name": "EEC1",
+      "full_name": "Electronic Engine Controller 1",
+      "description": "Engine speed, driver demand, and actual torque from the engine ECU.",
+      "source": "Engine ECU (SA 0x00)",
+      "signals": {
+        "engine_rpm": {
+          "spn": 190,
+          "description": "Actual engine speed",
+          "unit": "rpm",
+          "resolution": 0.125,
+          "offset": 0,
+          "range": [0, 8031.875],
+          "normal_range": [600, 2200],
+          "critical_low": 0,
+          "critical_high": 2500
+        },
+        "engine_torque_pct": {
+          "spn": 513,
+          "description": "Actual engine torque as percentage of reference torque",
+          "unit": "%",
+          "resolution": 1,
+          "offset": -125,
+          "range": [-125, 125],
+          "normal_range": [0, 100]
+        }
+      }
+    },
+    "65262": {
+      "name": "ET1",
+      "full_name": "Engine Temperature 1",
+      "description": "Engine coolant and oil temperatures.",
+      "source": "Engine ECU (SA 0x00)",
+      "signals": {
+        "coolant_temp_c": {
+          "spn": 110,
+          "description": "Engine coolant temperature",
+          "unit": "°C",
+          "resolution": 1,
+          "offset": -40,
+          "range": [-40, 210],
+          "normal_range": [75, 98],
+          "warning_high": 100,
+          "critical_high": 107
+        },
+        "oil_temp_c": {
+          "spn": 175,
+          "description": "Engine oil temperature",
+          "unit": "°C",
+          "resolution": 0.03125,
+          "offset": -273,
+          "range": [-273, 1735],
+          "normal_range": [80, 120],
+          "warning_high": 125,
+          "critical_high": 135
+        }
+      }
+    },
+    "65263": {
+      "name": "EFL/P1",
+      "full_name": "Engine Fluid Level/Pressure 1",
+      "description": "Engine oil and fuel delivery pressures.",
+      "source": "Engine ECU (SA 0x00)",
+      "signals": {
+        "oil_pressure_kpa": {
+          "spn": 100,
+          "description": "Engine oil pressure",
+          "unit": "kPa",
+          "resolution": 4,
+          "offset": 0,
+          "range": [0, 1000],
+          "normal_range": [240, 450],
+          "warning_low": 150,
+          "critical_low": 80
+        },
+        "fuel_pressure_kpa": {
+          "spn": 94,
+          "description": "Fuel delivery pressure",
+          "unit": "kPa",
+          "resolution": 4,
+          "offset": 0,
+          "range": [0, 1000],
+          "normal_range": [500, 700],
+          "warning_low": 300,
+          "critical_low": 150
+        }
+      }
+    },
+    "65271": {
+      "name": "VEP1",
+      "full_name": "Vehicle Electrical Power 1",
+      "description": "Battery and system voltage.",
+      "source": "Instrument Cluster (SA 0x23)",
+      "signals": {
+        "battery_voltage": {
+          "spn": 168,
+          "description": "Battery potential (voltage)",
+          "unit": "V",
+          "resolution": 0.05,
+          "offset": 0,
+          "range": [0, 3212.75],
+          "normal_range": [12.5, 14.8],
+          "warning_low": 11.5,
+          "critical_low": 10.5,
+          "warning_high": 15.5
+        }
+      }
+    },
+    "65226": {
+      "name": "DM1",
+      "full_name": "Active Diagnostic Trouble Codes",
+      "description": "Broadcast by any ECU that has active fault conditions. Contains lamp status and up to multiple SPN/FMI DTC pairs.",
+      "source": "Any ECU with active faults"
+    }
+  }
+}
