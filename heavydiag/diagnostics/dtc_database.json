@@ -1,0 +1,77 @@
+{
+  "_comment": "DTC database — maps SPN to component info and known FMI causes",
+  "spns": {
+    "110": {
+      "name": "Engine Coolant Temperature",
+      "component": "Coolant Temperature Sensor (CTS)",
+      "subsystem": "Engine Cooling",
+      "circuit": "Signal wire to ECM pin A-14, 5V reference, ground A-01",
+      "fmi_details": {
+        "0": {
+          "cause": "Coolant temperature above normal range (overheating)",
+          "likely_root_cause": "Low coolant level, blocked radiator, failed thermostat, or faulty water pump",
+          "procedure_id": "PROC_HIGH_COOLANT_TEMP"
+        },
+        "3": {
+          "cause": "Sensor voltage above normal — circuit shorted to high source",
+          "likely_root_cause": "Wiring short to battery voltage, failed sensor",
+          "procedure_id": "PROC_CTS_SHORT_HIGH"
+        },
+        "4": {
+          "cause": "Sensor voltage below normal — circuit shorted to ground or open",
+          "likely_root_cause": "Open circuit in signal wire, sensor connector unplugged, sensor failed short to ground",
+          "procedure_id": "PROC_CTS_SHORT_LOW"
+        }
+      }
+    },
+    "100": {
+      "name": "Engine Oil Pressure",
+      "component": "Engine Oil Pressure Sensor",
+      "subsystem": "Engine Lubrication",
+      "circuit": "Signal wire to ECM pin B-22, 5V reference, ground B-01",
+      "fmi_details": {
+        "1": {
+          "cause": "Oil pressure below normal operational range",
+          "likely_root_cause": "Low oil level, worn oil pump, blocked oil filter, engine bearing wear, or pressure sensor fault",
+          "procedure_id": "PROC_LOW_OIL_PRESSURE"
+        },
+        "3": {
+          "cause": "Sensor voltage above normal",
+          "likely_root_cause": "Wiring short to battery, failed sensor",
+          "procedure_id": "PROC_OIL_SENSOR_SHORT"
+        }
+      }
+    },
+    "168": {
+      "name": "Battery Potential (Voltage)",
+      "component": "Main Battery / Charging System",
+      "subsystem": "Vehicle Electrical",
+      "circuit": "Measured at main battery positive terminal via instrument cluster",
+      "fmi_details": {
+        "1": {
+          "cause": "Battery voltage below normal operational range",
+          "likely_root_cause": "Weak or discharged battery, failed alternator, excessive electrical load, loose or corroded connections",
+          "procedure_id": "PROC_LOW_BATTERY_VOLTAGE"
+        },
+        "0": {
+          "cause": "Battery voltage above normal operational range",
+          "likely_root_cause": "Failed voltage regulator, overcharging alternator",
+          "procedure_id": "PROC_HIGH_BATTERY_VOLTAGE"
+        }
+      }
+    },
+    "94": {
+      "name": "Fuel Delivery Pressure",
+      "component": "Fuel Delivery Pressure Sensor",
+      "subsystem": "Fuel System",
+      "circuit": "Signal wire to ECM pin C-08, 5V reference, ground C-01",
+      "fmi_details": {
+        "1": {
+          "cause": "Fuel delivery pressure below normal range",
+          "likely_root_cause": "Clogged fuel filter, weak fuel pump, air leak in fuel supply line, restricted fuel tank pickup",
+          "procedure_id": "PROC_LOW_FUEL_PRESSURE"
+        }
+      }
+    }
+  }
+}
