@@ -1,0 +1,534 @@
+{
+  "_comment": "Guided diagnostic procedures — each is a decision tree walked by GuidedProcedure state machine",
+
+  "PROC_HIGH_COOLANT_TEMP": {
+    "title": "Engine Overheating — High Coolant Temperature",
+    "severity": "critical",
+    "warning": "HOT SURFACES — Allow engine to cool before opening radiator cap. Risk of severe burns.",
+    "tools_required": ["Infrared thermometer", "Coolant level dipstick", "Pressure tester"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "Park the vehicle safely and shut off the engine. Wait 5 minutes for initial cooling. Do NOT open the radiator cap yet.",
+        "next": "CHECK_COOLANT_LEVEL"
+      },
+      "CHECK_COOLANT_LEVEL": {
+        "type": "decision",
+        "instruction": "Check the coolant overflow reservoir level (do not open radiator cap). Is the coolant level at or above the MIN mark?",
+        "choices": {
+          "Yes — level is OK": "CHECK_RADIATOR",
+          "No — level is low": "ADD_COOLANT"
+        }
+      },
+      "ADD_COOLANT": {
+        "type": "action",
+        "instruction": "Top up the coolant reservoir with the correct coolant mixture (50/50 antifreeze/water). Check for visible leaks under the vehicle and at hose connections.",
+        "next": "LEAK_CHECK"
+      },
+      "LEAK_CHECK": {
+        "type": "decision",
+        "instruction": "Are there visible coolant leaks (puddles under vehicle, wet hose connections, white residue at joints)?",
+        "choices": {
+          "Yes — leaks found": "ESCALATE_LEAK",
+          "No — no visible leaks": "MONITOR_TEMP"
+        }
+      },
+      "ESCALATE_LEAK": {
+        "type": "terminal",
+        "instruction": "Coolant leak detected. Vehicle must not be operated until the leak is repaired. Escalate to workshop for pressure test and leak repair.",
+        "outcome": "escalate"
+      },
+      "CHECK_RADIATOR": {
+        "type": "decision",
+        "instruction": "Visually inspect the radiator fins for debris, bugs, or blockage. Are the radiator fins clean and unobstructed?",
+        "choices": {
+          "Yes — radiator is clean": "CHECK_FAN",
+          "No — radiator is blocked": "CLEAN_RADIATOR"
+        }
+      },
+      "CLEAN_RADIATOR": {
+        "type": "action",
+        "instruction": "Use compressed air or a soft brush to clean radiator fins from the engine side outward. Do not use high-pressure water directly on the fins.",
+        "next": "MONITOR_TEMP"
+      },
+      "CHECK_FAN": {
+        "type": "decision",
+        "instruction": "With the engine running at operating temperature, verify the cooling fan is engaging. Does the fan spin freely and engage when the engine is hot?",
+        "choices": {
+          "Yes — fan is working": "CHECK_THERMOSTAT",
+          "No — fan not engaging": "ESCALATE_FAN"
+        }
+      },
+      "ESCALATE_FAN": {
+        "type": "terminal",
+        "instruction": "Cooling fan failure suspected. Escalate to workshop to inspect fan clutch, fan drive, or electric fan motor and relay.",
+        "outcome": "escalate"
+      },
+      "CHECK_THERMOSTAT": {
+        "type": "decision",
+        "instruction": "Using an infrared thermometer, check if the upper radiator hose gets hot within 5–10 minutes of running. Does the upper hose reach operating temperature (>75°C)?",
+        "choices": {
+          "Yes — hose gets hot": "MONITOR_TEMP",
+          "No — hose stays cold": "ESCALATE_THERMOSTAT"
+        }
+      },
+      "ESCALATE_THERMOSTAT": {
+        "type": "terminal",
+        "instruction": "Thermostat stuck closed — coolant is not flowing through the radiator. Escalate to workshop for thermostat replacement.",
+        "outcome": "escalate"
+      },
+      "MONITOR_TEMP": {
+        "type": "action",
+        "instruction": "Restart the engine and monitor coolant temperature for 10 minutes at idle. Clear the DTC and observe if it returns.",
+        "next": "TEMP_STABLE"
+      },
+      "TEMP_STABLE": {
+        "type": "decision",
+        "instruction": "Did the coolant temperature stay below the warning threshold (98°C) during the 10-minute monitoring period?",
+        "choices": {
+          "Yes — temperature is stable": "RESOLVED",
+          "No — temperature still rising": "ESCALATE_PUMP"
+        }
+      },
+      "ESCALATE_PUMP": {
+        "type": "terminal",
+        "instruction": "Overheating persists after basic checks. Likely water pump failure or internal blockage. Do not operate vehicle. Escalate to workshop.",
+        "outcome": "escalate"
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Root cause identified and corrected. Coolant temperature is stable. Clear DTCs, complete a short road test, and monitor for recurrence.",
+        "outcome": "resolved"
+      }
+    }
+  },
+
+  "PROC_LOW_OIL_PRESSURE": {
+    "title": "Low Engine Oil Pressure",
+    "severity": "critical",
+    "warning": "CRITICAL — Continued operation with low oil pressure WILL cause engine damage. Shut down immediately if pressure does not recover.",
+    "tools_required": ["Oil dipstick", "Mechanical oil pressure gauge (optional)"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "IMMEDIATELY reduce engine load. If DTC is active while driving, safely pull over and shut off the engine within 30 seconds.",
+        "next": "CHECK_OIL_LEVEL"
+      },
+      "CHECK_OIL_LEVEL": {
+        "type": "decision",
+        "instruction": "Check the engine oil level on the dipstick with the engine OFF and vehicle on level ground. Is the oil level between MIN and MAX?",
+        "choices": {
+          "Yes — oil level is OK": "CHECK_OIL_QUALITY",
+          "No — oil level is low": "ADD_OIL"
+        }
+      },
+      "ADD_OIL": {
+        "type": "action",
+        "instruction": "Add the correct grade engine oil (check door placard or owner manual) until the level reaches the MAX mark. Do not overfill.",
+        "next": "RECHECK_PRESSURE"
+      },
+      "CHECK_OIL_QUALITY": {
+        "type": "decision",
+        "instruction": "Inspect the oil on the dipstick. Is the oil clean (amber to dark brown) without a milky appearance (which indicates coolant contamination)?",
+        "choices": {
+          "Yes — oil looks normal": "RECHECK_PRESSURE",
+          "No — oil appears milky or contaminated": "ESCALATE_CONTAMINATION"
+        }
+      },
+      "ESCALATE_CONTAMINATION": {
+        "type": "terminal",
+        "instruction": "Milky oil indicates coolant mixing with engine oil — likely a head gasket or oil cooler failure. Do NOT operate the engine. Escalate immediately.",
+        "outcome": "escalate"
+      },
+      "RECHECK_PRESSURE": {
+        "type": "action",
+        "instruction": "Start the engine and idle for 2 minutes. Observe the oil pressure gauge or monitor the DTC status.",
+        "next": "PRESSURE_OK"
+      },
+      "PRESSURE_OK": {
+        "type": "decision",
+        "instruction": "Is the oil pressure now within the normal range (240–450 kPa at operating temperature) and the DTC cleared or inactive?",
+        "choices": {
+          "Yes — pressure is normal": "RESOLVED",
+          "No — pressure still low": "ESCALATE_PUMP"
+        }
+      },
+      "ESCALATE_PUMP": {
+        "type": "terminal",
+        "instruction": "Oil pressure remains low despite correct oil level. Likely worn oil pump, blocked oil pickup, or bearing wear. Shut down immediately and escalate to workshop.",
+        "outcome": "escalate"
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Oil level was low — topped up and pressure restored. Monitor for oil consumption and check for leaks. Schedule oil analysis if consumption is high.",
+        "outcome": "resolved"
+      }
+    }
+  },
+
+  "PROC_LOW_BATTERY_VOLTAGE": {
+    "title": "Battery Voltage Below Normal",
+    "severity": "warning",
+    "warning": "",
+    "tools_required": ["Digital multimeter", "Battery load tester (optional)"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "With the engine running at 1200+ RPM, measure battery voltage at the battery terminals with a multimeter.",
+        "next": "CHECK_CHARGING_VOLTAGE"
+      },
+      "CHECK_CHARGING_VOLTAGE": {
+        "type": "decision",
+        "instruction": "What is the measured battery voltage with the engine running?",
+        "choices": {
+          "13.8–14.8V (normal charging)": "CHECK_CONNECTIONS",
+          "Below 13.8V (low / not charging)": "ALTERNATOR_SUSPECT",
+          "Above 15V (overcharging)": "ESCALATE_REGULATOR"
+        }
+      },
+      "ALTERNATOR_SUSPECT": {
+        "type": "decision",
+        "instruction": "Check alternator belt — is it present, tight (no more than 1cm deflection), and free of cracks?",
+        "choices": {
+          "Yes — belt is OK": "ESCALATE_ALTERNATOR",
+          "No — belt is loose or damaged": "TIGHTEN_BELT"
+        }
+      },
+      "TIGHTEN_BELT": {
+        "type": "action",
+        "instruction": "Adjust or replace the alternator drive belt. Re-tension to the manufacturer spec. Restart and recheck voltage.",
+        "next": "CHECK_CHARGING_VOLTAGE"
+      },
+      "ESCALATE_ALTERNATOR": {
+        "type": "terminal",
+        "instruction": "Alternator not charging with belt intact. Likely failed alternator or voltage regulator. Escalate to workshop.",
+        "outcome": "escalate"
+      },
+      "ESCALATE_REGULATOR": {
+        "type": "terminal",
+        "instruction": "Voltage above 15V indicates a failed voltage regulator overcharging the battery. This can damage electronics. Escalate immediately.",
+        "outcome": "escalate"
+      },
+      "CHECK_CONNECTIONS": {
+        "type": "decision",
+        "instruction": "Alternator is charging correctly. Inspect battery terminals and cable connections for corrosion or looseness. Are all connections clean and tight?",
+        "choices": {
+          "Yes — connections are good": "TEST_BATTERY",
+          "No — corrosion or loose connections found": "CLEAN_CONNECTIONS"
+        }
+      },
+      "CLEAN_CONNECTIONS": {
+        "type": "action",
+        "instruction": "Clean battery terminals with a wire brush and baking soda solution. Tighten all cable connections. Apply anti-corrosion spray.",
+        "next": "RESOLVED"
+      },
+      "TEST_BATTERY": {
+        "type": "decision",
+        "instruction": "Perform a battery load test or check the battery age (typical lifespan 3–5 years). Does the battery hold voltage above 12.4V with the engine off?",
+        "choices": {
+          "Yes — battery is good": "RESOLVED",
+          "No — battery failing": "REPLACE_BATTERY"
+        }
+      },
+      "REPLACE_BATTERY": {
+        "type": "terminal",
+        "instruction": "Battery is failing and should be replaced. Escalate to workshop for battery replacement and charging system verification.",
+        "outcome": "escalate"
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Charging system is functioning correctly. Root cause was corroded/loose connections or a brief discharge event. Clear DTCs and monitor.",
+        "outcome": "resolved"
+      }
+    }
+  },
+
+  "PROC_LOW_FUEL_PRESSURE": {
+    "title": "Low Fuel Delivery Pressure",
+    "severity": "warning",
+    "warning": "",
+    "tools_required": ["Fuel pressure gauge", "Fuel filter wrench"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "Check the fuel gauge — confirm there is sufficient fuel in the tank (above 1/8 tank). Low fuel can cause air ingestion and low pressure.",
+        "next": "CHECK_FUEL_LEVEL"
+      },
+      "CHECK_FUEL_LEVEL": {
+        "type": "decision",
+        "instruction": "Is there more than 1/8 tank of fuel?",
+        "choices": {
+          "Yes — sufficient fuel": "CHECK_FUEL_FILTER",
+          "No — fuel is very low": "REFUEL"
+        }
+      },
+      "REFUEL": {
+        "type": "action",
+        "instruction": "Refuel the vehicle. Prime the fuel system by cycling the ignition key ON/OFF three times without cranking, then start the engine.",
+        "next": "RECHECK_PRESSURE"
+      },
+      "CHECK_FUEL_FILTER": {
+        "type": "decision",
+        "instruction": "Check the fuel filter service interval (typically every 30,000 miles). Is the fuel filter within its service interval?",
+        "choices": {
+          "Yes — filter is new/recent": "INSPECT_LINES",
+          "No — filter is overdue": "REPLACE_FILTER"
+        }
+      },
+      "REPLACE_FILTER": {
+        "type": "action",
+        "instruction": "Replace the primary fuel filter and water separator. Prime the system after replacement by cycling the ignition 3–4 times before cranking.",
+        "next": "RECHECK_PRESSURE"
+      },
+      "INSPECT_LINES": {
+        "type": "decision",
+        "instruction": "Inspect fuel supply lines from tank to engine for kinks, cracks, or loose fittings. Are all fuel lines intact with no air leaks?",
+        "choices": {
+          "Yes — lines are OK": "ESCALATE_PUMP",
+          "No — damaged or loose line found": "ESCALATE_LINES"
+        }
+      },
+      "ESCALATE_LINES": {
+        "type": "terminal",
+        "instruction": "Fuel line damage or air leak found. Repair required before operating. Escalate to workshop.",
+        "outcome": "escalate"
+      },
+      "ESCALATE_PUMP": {
+        "type": "terminal",
+        "instruction": "Filter and lines are OK but pressure is still low. Likely a failing fuel lift pump. Escalate to workshop for pump replacement.",
+        "outcome": "escalate"
+      },
+      "RECHECK_PRESSURE": {
+        "type": "action",
+        "instruction": "Start the engine and monitor fuel pressure. Allow 2 minutes at idle for pressure to stabilize.",
+        "next": "PRESSURE_STABLE"
+      },
+      "PRESSURE_STABLE": {
+        "type": "decision",
+        "instruction": "Is fuel delivery pressure now within the normal range (500–700 kPa)?",
+        "choices": {
+          "Yes — pressure restored": "RESOLVED",
+          "No — still low": "ESCALATE_PUMP"
+        }
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Fuel pressure restored. Root cause was low fuel level or a clogged filter. Clear DTCs and monitor for recurrence.",
+        "outcome": "resolved"
+      }
+    }
+  },
+
+  "PROC_CTS_SHORT_HIGH": {
+    "title": "Coolant Temp Sensor — Voltage High (Shorted to Power)",
+    "severity": "warning",
+    "warning": "",
+    "tools_required": ["Digital multimeter", "Wiring diagram"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "Turn the ignition OFF. Locate the Coolant Temperature Sensor (CTS) — typically on the engine block near the thermostat housing. Disconnect the sensor connector.",
+        "next": "INSPECT_CONNECTOR"
+      },
+      "INSPECT_CONNECTOR": {
+        "type": "decision",
+        "instruction": "Visually inspect the CTS connector and wiring for damage, chafing, or bare wires contacting a voltage source. Is the wiring undamaged?",
+        "choices": {
+          "Yes — wiring looks OK": "MEASURE_RESISTANCE",
+          "No — damaged wiring found": "REPAIR_WIRING"
+        }
+      },
+      "REPAIR_WIRING": {
+        "type": "terminal",
+        "instruction": "Short to power confirmed by damaged wiring. Repair or replace the affected wiring harness section. Clear DTCs and verify repair.",
+        "outcome": "escalate"
+      },
+      "MEASURE_RESISTANCE": {
+        "type": "action",
+        "instruction": "With the sensor connector disconnected and ignition OFF, measure resistance across the CTS sensor terminals. A typical CTS reads 2–3 kΩ at room temperature.",
+        "next": "RESISTANCE_OK"
+      },
+      "RESISTANCE_OK": {
+        "type": "decision",
+        "instruction": "Is the CTS resistance within the expected range (approximately 2–3 kΩ at 20°C, decreasing with temperature)?",
+        "choices": {
+          "Yes — sensor resistance is correct": "ESCALATE_ECM",
+          "No — resistance is out of range or open/short": "REPLACE_SENSOR"
+        }
+      },
+      "REPLACE_SENSOR": {
+        "type": "terminal",
+        "instruction": "CTS sensor has failed internally. Replace the coolant temperature sensor. Clear DTCs and verify the signal returns to normal range.",
+        "outcome": "resolved"
+      },
+      "ESCALATE_ECM": {
+        "type": "terminal",
+        "instruction": "Sensor tests good but fault persists. Possible ECM pin fault or intermittent wiring issue. Escalate to workshop for harness continuity test and ECM diagnosis.",
+        "outcome": "escalate"
+      }
+    }
+  },
+
+  "PROC_CTS_SHORT_LOW": {
+    "title": "Coolant Temp Sensor — Voltage Low (Open Circuit or Shorted to Ground)",
+    "severity": "warning",
+    "warning": "",
+    "tools_required": ["Digital multimeter", "Wiring diagram"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "Turn the ignition OFF. Locate the Coolant Temperature Sensor (CTS) connector. Disconnect it and inspect the connector for bent pins, corrosion, or moisture.",
+        "next": "INSPECT_CONNECTOR"
+      },
+      "INSPECT_CONNECTOR": {
+        "type": "decision",
+        "instruction": "Is the connector free of corrosion, moisture, and bent/pushed-back pins?",
+        "choices": {
+          "Yes — connector is clean and intact": "MEASURE_RESISTANCE",
+          "No — corrosion or pin damage found": "CLEAN_CONNECTOR"
+        }
+      },
+      "CLEAN_CONNECTOR": {
+        "type": "action",
+        "instruction": "Clean the connector with electrical contact cleaner. Straighten any bent pins. Reconnect and clear the DTC — verify if it returns.",
+        "next": "FAULT_CLEARED"
+      },
+      "FAULT_CLEARED": {
+        "type": "decision",
+        "instruction": "After cleaning and reconnecting, did the DTC clear and not return after a 5-minute idle?",
+        "choices": {
+          "Yes — DTC did not return": "RESOLVED",
+          "No — DTC returned": "MEASURE_RESISTANCE"
+        }
+      },
+      "MEASURE_RESISTANCE": {
+        "type": "action",
+        "instruction": "With the connector disconnected, measure resistance across the CTS terminals. Also check continuity of the signal wire from the connector back to the ECM.",
+        "next": "RESISTANCE_OK"
+      },
+      "RESISTANCE_OK": {
+        "type": "decision",
+        "instruction": "Does the CTS sensor read approximately 2–3 kΩ at room temperature? Is there continuity in the signal wire?",
+        "choices": {
+          "Yes — sensor and wire are OK": "ESCALATE_ECM",
+          "No — open circuit or wrong resistance": "REPLACE_SENSOR"
+        }
+      },
+      "REPLACE_SENSOR": {
+        "type": "terminal",
+        "instruction": "CTS sensor is open-circuit or out of range — replace the sensor. Clear DTCs and verify signal is within normal range after replacement.",
+        "outcome": "resolved"
+      },
+      "ESCALATE_ECM": {
+        "type": "terminal",
+        "instruction": "Sensor and wiring test good. Possible intermittent fault or ECM issue. Escalate to workshop for further diagnosis with factory scan tool.",
+        "outcome": "escalate"
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Fault resolved by cleaning connector. Corrosion or moisture ingress was the root cause. Monitor for recurrence.",
+        "outcome": "resolved"
+      }
+    }
+  },
+
+  "PROC_OIL_SENSOR_SHORT": {
+    "title": "Oil Pressure Sensor — Voltage High (Short to Power)",
+    "severity": "warning",
+    "warning": "",
+    "tools_required": ["Digital multimeter"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "Turn ignition OFF. Locate the engine oil pressure sensor (typically on the engine block/oil filter housing). Disconnect the sensor connector.",
+        "next": "INSPECT_WIRING"
+      },
+      "INSPECT_WIRING": {
+        "type": "decision",
+        "instruction": "Inspect sensor wiring for chafing against hot or sharp surfaces, or bare wire contacting battery voltage. Is wiring undamaged?",
+        "choices": {
+          "Yes — wiring OK": "TEST_SENSOR",
+          "No — wiring damaged": "REPAIR_WIRING"
+        }
+      },
+      "REPAIR_WIRING": {
+        "type": "terminal",
+        "instruction": "Wiring short to power confirmed. Repair or replace affected section of harness. Clear DTCs and verify.",
+        "outcome": "escalate"
+      },
+      "TEST_SENSOR": {
+        "type": "action",
+        "instruction": "With connector disconnected, use a multimeter to verify the sensor signal pin is not shorted to the reference voltage wire internally in the sensor.",
+        "next": "SENSOR_OK"
+      },
+      "SENSOR_OK": {
+        "type": "decision",
+        "instruction": "Is the sensor free of internal shorts (no continuity between signal and power pins with connector disconnected)?",
+        "choices": {
+          "Yes — sensor tests OK": "ESCALATE_ECM",
+          "No — sensor internally shorted": "REPLACE_SENSOR"
+        }
+      },
+      "REPLACE_SENSOR": {
+        "type": "terminal",
+        "instruction": "Oil pressure sensor has failed with an internal short. Replace the sensor. Clear DTCs and verify normal operation.",
+        "outcome": "resolved"
+      },
+      "ESCALATE_ECM": {
+        "type": "terminal",
+        "instruction": "Sensor and wiring test normal. Possible ECM fault. Escalate to workshop for advanced diagnosis.",
+        "outcome": "escalate"
+      }
+    }
+  },
+
+  "PROC_HIGH_BATTERY_VOLTAGE": {
+    "title": "Battery Voltage Above Normal (Overcharging)",
+    "severity": "warning",
+    "warning": "Overcharging can damage the battery, electronics, and cause battery gassing. Resolve promptly.",
+    "tools_required": ["Digital multimeter"],
+    "steps": {
+      "START": {
+        "type": "action",
+        "instruction": "With the engine running at 1200 RPM, measure voltage at the battery terminals with a multimeter.",
+        "next": "CONFIRM_VOLTAGE"
+      },
+      "CONFIRM_VOLTAGE": {
+        "type": "decision",
+        "instruction": "Is the measured battery voltage above 15.0V with the engine running?",
+        "choices": {
+          "Yes — voltage is above 15V": "ESCALATE_REGULATOR",
+          "No — voltage is 13.8–14.8V": "CHECK_SENSOR"
+        }
+      },
+      "CHECK_SENSOR": {
+        "type": "action",
+        "instruction": "Voltage appears normal at the battery. The DTC may have been triggered by a momentary spike. Check the battery voltage sensor wiring and connections.",
+        "next": "SENSOR_OK"
+      },
+      "SENSOR_OK": {
+        "type": "decision",
+        "instruction": "Are the battery voltage sensor connections clean and tight?",
+        "choices": {
+          "Yes — connections are OK": "RESOLVED",
+          "No — loose or corroded": "CLEAN_FIX"
+        }
+      },
+      "CLEAN_FIX": {
+        "type": "terminal",
+        "instruction": "Clean and tighten connections. Clear DTC and monitor. Likely a false trigger from a momentary connection issue.",
+        "outcome": "resolved"
+      },
+      "ESCALATE_REGULATOR": {
+        "type": "terminal",
+        "instruction": "Overcharging confirmed — voltage regulator or alternator failure. Do not operate vehicle until repaired. Escalate to workshop immediately.",
+        "outcome": "escalate"
+      },
+      "RESOLVED": {
+        "type": "terminal",
+        "instruction": "Charging voltage is within normal range. DTC was likely a transient event. Clear and monitor.",
+        "outcome": "resolved"
+      }
+    }
+  }
+}
