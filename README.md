@@ -18,6 +18,23 @@ The platform directly mirrors the architecture of production diagnostic tools us
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="docs/screenshot1.png" width="49%" alt="Live Data Panel"/>
+  <img src="docs/screenshot2.png" width="49%" alt="Fault Codes Panel"/>
+</p>
+<p align="center">
+  <img src="docs/screenshot3.png" width="49%" alt="Guided Diagnosis"/>
+  <img src="docs/screenshot4.png" width="49%" alt="DTC Detail View"/>
+</p>
+<p align="center">
+  <img src="docs/screenshot5.png" width="60%" alt="Diagnostic Report"/>
+</p>
+
+---
+
+
 ## Features
 
 ### Live J1939 Signal Monitoring
